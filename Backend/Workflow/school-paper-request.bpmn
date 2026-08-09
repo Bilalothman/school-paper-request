@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_school_request" targetNamespace="http://school.example/workflows">
+  <bpmn:process id="school-paper-request" name="School Paper Request" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="requestSubmitted" name="Request submitted"><bpmn:outgoing>Flow_start_review</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_start_review" sourceRef="requestSubmitted" targetRef="adminReview" />
+    <bpmn:userTask id="adminReview" name="Admin Review" camunda:candidateGroups="Admin"><bpmn:incoming>Flow_start_review</bpmn:incoming><bpmn:outgoing>Flow_review_gateway</bpmn:outgoing></bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_review_gateway" sourceRef="adminReview" targetRef="decisionGateway" />
+    <bpmn:exclusiveGateway id="decisionGateway" name="Decision"><bpmn:incoming>Flow_review_gateway</bpmn:incoming><bpmn:outgoing>Flow_approved</bpmn:outgoing><bpmn:outgoing>Flow_rejected</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_approved" name="Approved" sourceRef="decisionGateway" targetRef="approvedEnd"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${decision == "Approved"}</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_rejected" name="Rejected" sourceRef="decisionGateway" targetRef="rejectedEnd"><bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${decision == "Rejected"}</bpmn:conditionExpression></bpmn:sequenceFlow>
+    <bpmn:endEvent id="approvedEnd" name="Approved"><bpmn:incoming>Flow_approved</bpmn:incoming></bpmn:endEvent>
+    <bpmn:endEvent id="rejectedEnd" name="Rejected"><bpmn:incoming>Flow_rejected</bpmn:incoming></bpmn:endEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_school_request"><bpmndi:BPMNPlane id="Plane_school_request" bpmnElement="school-paper-request">
+    <bpmndi:BPMNShape id="Shape_start" bpmnElement="requestSubmitted"><dc:Bounds x="100" y="102" width="36" height="36" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Shape_review" bpmnElement="adminReview"><dc:Bounds x="190" y="80" width="120" height="80" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Shape_gateway" bpmnElement="decisionGateway" isMarkerVisible="true"><dc:Bounds x="365" y="95" width="50" height="50" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Shape_approved" bpmnElement="approvedEnd"><dc:Bounds x="500" y="42" width="36" height="36" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Shape_rejected" bpmnElement="rejectedEnd"><dc:Bounds x="500" y="162" width="36" height="36" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNEdge id="Edge_start_review" bpmnElement="Flow_start_review"><di:waypoint x="136" y="120" /><di:waypoint x="190" y="120" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Edge_review_gateway" bpmnElement="Flow_review_gateway"><di:waypoint x="310" y="120" /><di:waypoint x="365" y="120" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Edge_approved" bpmnElement="Flow_approved"><di:waypoint x="390" y="95" /><di:waypoint x="390" y="60" /><di:waypoint x="500" y="60" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Edge_rejected" bpmnElement="Flow_rejected"><di:waypoint x="390" y="145" /><di:waypoint x="390" y="180" /><di:waypoint x="500" y="180" /></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

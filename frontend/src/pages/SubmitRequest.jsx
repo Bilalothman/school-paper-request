@@ -1,0 +1,13 @@
+import { useEffect, useState } from 'react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import Icon from '../components/Icon'
+import api, { errorMessage } from '../services/api'
+
+export default function SubmitRequest() {
+  const { serviceId } = useParams(); const location = useLocation(); const navigate = useNavigate(); const [service, setService] = useState(location.state?.service || null)
+  const [note, setNote] = useState(''); const [loading, setLoading] = useState(false); const [error, setError] = useState('')
+  useEffect(() => { if (!service) api.get('/services').then(({ data }) => setService(data.find((item) => item.id === Number(serviceId)))).catch(() => setError('Could not load the selected service.')) }, [service, serviceId])
+  if (!service && !error) return <div className="loading-panel"><span className="spinner" /> Loading service...</div>
+  const submit = async (event) => { event.preventDefault(); setLoading(true); setError(''); try { await api.post('/requests', { serviceId: Number(serviceId), note }); navigate('/my-requests', { state: { success: 'Request submitted successfully.' } }) } catch (err) { setError(errorMessage(err, 'Request could not be submitted.')) } finally { setLoading(false) } }
+  return <><Link className="back-link" to="/services"><span aria-hidden="true">←</span> Back to services</Link><div className="submit-layout"><section className="request-form-panel"><p className="eyebrow">New request</p><h1>{service?.name || 'Service not found'}</h1><p>{service?.description}</p>{error && <div className="message error">{error}</div>}{service && <form onSubmit={submit}><label>Additional note <span className="optional">Optional</span><textarea rows="6" maxLength="1000" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Tell the administration why you need this document..." /><small>{note.length} / 1000 characters</small></label><button className="wide-button" disabled={loading}>{loading ? 'Submitting request...' : 'Submit request'}<Icon name="arrow" size={18} /></button></form>}</section><aside className="process-panel"><span className="service-icon large"><Icon name="document" size={28} /></span><h2>What happens next?</h2><ol className="process-steps"><li><span>1</span><div><strong>Request submitted</strong><p>Your request is securely recorded.</p></div></li><li><span>2</span><div><strong>Administration review</strong><p>A school administrator reviews it.</p></div></li><li><span>3</span><div><strong>Decision available</strong><p>Track the result in My Requests.</p></div></li></ol></aside></div></>
+}

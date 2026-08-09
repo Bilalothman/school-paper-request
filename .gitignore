@@ -1,0 +1,15 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+.env
+*.user
+*.suo
+
+# Downloaded Camunda runtime and archives (install Camunda separately)
+/camunda7/
+/camunda*.zip
+/camunda.part*
+
+# Local runtime logs
+/google-signin*.log
