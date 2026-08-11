@@ -95,6 +95,29 @@ public class ApplicationTests
     }
 
     [Fact]
+    public async Task ForgotPassword_WithValidCode_ChangesPassword()
+    {
+        await using var db = CreateDb();
+        var hasher = new PasswordHasher<User>();
+        var user = new User { FullName = "Student", Email = "student@school.com", PasswordHash = "", Role = UserRoles.Student };
+        user.PasswordHash = hasher.HashPassword(user, "Student123!");
+        db.Users.Add(user);
+        await db.SaveChangesAsync();
+        var sender = new FakeEmailSender();
+        var controller = CreateAuthController(db, hasher, sender);
+
+        var requested = await controller.ForgotPassword(new ForgotPasswordDto(user.Email), CancellationToken.None);
+        var reset = await controller.ResetPassword(
+            new ResetPasswordDto(user.Email, sender.Code!, "Changed123!", "Changed123!"), CancellationToken.None);
+        var login = await controller.Login(new LoginRequestDto(user.Email, "Changed123!"));
+
+        Assert.IsType<AcceptedResult>(requested);
+        Assert.IsType<OkObjectResult>(reset);
+        Assert.IsType<OkObjectResult>(login.Result);
+        Assert.Empty(db.PasswordResets);
+    }
+
+    [Fact]
     public async Task Admin_CanApproveSubmittedRequest_OnlyOnce()
     {
         await using var db = CreateDb();
@@ -173,7 +196,7 @@ public class ApplicationTests
     private sealed class FakeEmailSender : IEmailSender
     {
         public string? Code { get; private set; }
-        public Task SendVerificationCodeAsync(string email, string fullName, string code, CancellationToken cancellationToken)
+        public Task SendVerificationCodeAsync(string email, string fullName, string code, CancellationToken cancellationToken, bool isPasswordReset = false)
         {
             Code = code;
             return Task.CompletedTask;

@@ -13,6 +13,11 @@ export function AuthProvider({ children }) {
       localStorage.setItem('user', JSON.stringify(data.user))
       setUser(data.user)
     },
+    updateSession(data) {
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
+      setUser(data.user)
+    },
     logout() {
       localStorage.removeItem('token')
       localStorage.removeItem('user')

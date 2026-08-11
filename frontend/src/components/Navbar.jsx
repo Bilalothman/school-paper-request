@@ -15,6 +15,7 @@ export default function Navbar() {
       <nav>
         {user.role === 'Student' && <><NavLink to="/services">Services</NavLink><NavLink to="/my-requests">My Requests</NavLink></>}
         {user.role === 'Admin' && <><NavLink to="/admin/requests">Admin Requests</NavLink><NavLink to="/admin/services">Manage Services</NavLink></>}
+        <NavLink to="/profile">Profile</NavLink>
         <button className="link-button" onClick={signOut}>Logout</button>
         <div className="nav-user"><span className="avatar">{user.fullName.charAt(0)}</span><span className="user-copy"><strong>{user.fullName}</strong><span>{user.role}</span></span></div>
       </nav>

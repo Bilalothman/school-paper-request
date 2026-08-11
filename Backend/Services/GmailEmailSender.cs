@@ -6,7 +6,7 @@ namespace Backend.Services;
 
 public class GmailEmailSender(IConfiguration configuration, IWebHostEnvironment environment) : IEmailSender
 {
-    public async Task SendVerificationCodeAsync(string email, string fullName, string code, CancellationToken cancellationToken)
+    public async Task SendVerificationCodeAsync(string email, string fullName, string code, CancellationToken cancellationToken, bool isPasswordReset = false)
     {
         var username = configuration["Gmail:Username"];
         var appPassword = configuration["Gmail:AppPassword"];
@@ -28,7 +28,7 @@ public class GmailEmailSender(IConfiguration configuration, IWebHostEnvironment 
         startInfo.ArgumentList.Add(scriptPath);
 
         using var process = Process.Start(startInfo) ?? throw new InvalidOperationException("The email process could not be started.");
-        var payload = JsonSerializer.Serialize(new { username, appPassword, fromName, email, fullName, code });
+        var payload = JsonSerializer.Serialize(new { username, appPassword, fromName, email, fullName, code, isPasswordReset });
         await process.StandardInput.WriteAsync(payload.AsMemory(), cancellationToken);
         process.StandardInput.Close();
         var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);

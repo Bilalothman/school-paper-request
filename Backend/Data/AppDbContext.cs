@@ -9,12 +9,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<PaperService> Services => Set<PaperService>();
     public DbSet<PaperRequest> Requests => Set<PaperRequest>();
     public DbSet<PendingRegistration> PendingRegistrations => Set<PendingRegistration>();
+    public DbSet<PasswordReset> PasswordResets => Set<PasswordReset>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().HasIndex(user => user.Email).IsUnique();
         modelBuilder.Entity<User>().HasIndex(user => user.GoogleSubject).IsUnique();
         modelBuilder.Entity<PendingRegistration>().HasIndex(item => item.Email).IsUnique();
+        modelBuilder.Entity<PasswordReset>().HasIndex(item => item.Email).IsUnique();
         modelBuilder.Entity<PaperRequest>()
             .HasOne(request => request.Student)
             .WithMany(user => user.Requests)

@@ -126,6 +126,85 @@ public class AuthController(
         return Ok(new LoginResponseDto(tokenService.CreateToken(user), new UserDto(user.Id, user.FullName, user.Email, user.Role)));
     }
 
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult> ForgotPassword(ForgotPasswordDto dto, CancellationToken cancellationToken)
+    {
+        var email = dto.Email.Trim().ToLowerInvariant();
+        var user = await db.Users.SingleOrDefaultAsync(item => item.Email == email, cancellationToken);
+        if (user is null)
+            return Accepted(new { message = "If an account exists for this email, a verification code has been sent." });
+
+        var now = DateTime.UtcNow;
+        var reset = await db.PasswordResets.SingleOrDefaultAsync(item => item.Email == email, cancellationToken);
+        if (reset is not null && reset.LastSentAt > now.AddSeconds(-30))
+            return StatusCode(StatusCodes.Status429TooManyRequests, new { message = "Please wait 30 seconds before requesting another code." });
+
+        var code = RandomNumberGenerator.GetInt32(1_000_000).ToString("D6");
+        reset ??= new PasswordReset { Email = email, CodeHash = "" };
+        reset.CodeHash = HashCode(code);
+        reset.ExpiresAt = now.AddMinutes(10);
+        reset.LastSentAt = now;
+        reset.FailedAttempts = 0;
+        if (reset.Id == 0) db.PasswordResets.Add(reset);
+        await db.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await emailSender.SendVerificationCodeAsync(email, user.FullName, code, cancellationToken, isPasswordReset: true);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Could not send a password reset email to {Email}", email);
+            return StatusCode(StatusCodes.Status503ServiceUnavailable,
+                new { message = "The password reset email could not be sent. Check the Gmail configuration and try again." });
+        }
+
+        return Accepted(new { message = "If an account exists for this email, a verification code has been sent." });
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<ActionResult> ResetPassword(ResetPasswordDto dto, CancellationToken cancellationToken)
+    {
+        var email = dto.Email.Trim().ToLowerInvariant();
+        var reset = await db.PasswordResets.SingleOrDefaultAsync(item => item.Email == email, cancellationToken);
+        if (reset is null) return BadRequest(new { message = "No password reset request was found. Request a new code." });
+        if (reset.ExpiresAt <= DateTime.UtcNow)
+        {
+            db.PasswordResets.Remove(reset);
+            await db.SaveChangesAsync(cancellationToken);
+            return BadRequest(new { message = "The verification code expired. Request a new code." });
+        }
+
+        var suppliedHash = Convert.FromHexString(HashCode(dto.Code));
+        var expectedHash = Convert.FromHexString(reset.CodeHash);
+        if (!CryptographicOperations.FixedTimeEquals(suppliedHash, expectedHash))
+        {
+            reset.FailedAttempts++;
+            if (reset.FailedAttempts >= 5) db.PasswordResets.Remove(reset);
+            await db.SaveChangesAsync(cancellationToken);
+            return BadRequest(new { message = reset.FailedAttempts >= 5
+                ? "Too many incorrect attempts. Request a new code."
+                : "Invalid verification code." });
+        }
+        if (dto.NewPassword != dto.ConfirmPassword)
+            return BadRequest(new { message = "Passwords do not match." });
+        if (!dto.NewPassword.Any(char.IsUpper) || !dto.NewPassword.Any(char.IsLower) || !dto.NewPassword.Any(char.IsDigit))
+            return BadRequest(new { message = "Password must include an uppercase letter, a lowercase letter, and a number." });
+
+        var user = await db.Users.SingleOrDefaultAsync(item => item.Email == email, cancellationToken);
+        if (user is null)
+        {
+            db.PasswordResets.Remove(reset);
+            await db.SaveChangesAsync(cancellationToken);
+            return BadRequest(new { message = "This password reset request is no longer valid." });
+        }
+
+        user.PasswordHash = passwordHasher.HashPassword(user, dto.NewPassword);
+        db.PasswordResets.Remove(reset);
+        await db.SaveChangesAsync(cancellationToken);
+        return Ok(new { message = "Your password was reset successfully. You can now sign in." });
+    }
+
     [HttpGet("google-config")]
     public ActionResult GetGoogleConfig() => Ok(new { clientId = configuration["Google:ClientId"] ?? "" });
 

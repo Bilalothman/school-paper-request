@@ -8,6 +8,8 @@ import SubmitRequest from './pages/SubmitRequest'
 import MyRequests from './pages/MyRequests'
 import AdminRequests from './pages/AdminRequests'
 import AdminServices from './pages/AdminServices'
+import Profile from './pages/Profile'
+import ForgotPassword from './pages/ForgotPassword'
 
 export default function App() {
   return (
@@ -18,6 +20,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route element={<ProtectedRoute role="Student" />}>
             <Route path="/services" element={<Services />} />
             <Route path="/submit-request/:serviceId" element={<SubmitRequest />} />
@@ -26,6 +29,9 @@ export default function App() {
           <Route element={<ProtectedRoute role="Admin" />}>
             <Route path="/admin/requests" element={<AdminRequests />} />
             <Route path="/admin/services" element={<AdminServices />} />
+          </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
