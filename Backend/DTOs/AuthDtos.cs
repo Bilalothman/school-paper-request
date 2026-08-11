@@ -15,7 +15,7 @@ public record RegisterRequestDto(
 public record VerifyEmailDto(
     [Required, EmailAddress] string Email,
     [Required, RegularExpression("^[0-9]{6}$")] string Code);
-public record GoogleLoginDto([Required] string Credential);
+public record GoogleLoginDto([Required] string Credential, bool AllowRegistration = false);
 
 public record UserDto(int Id, string FullName, string Email, string Role);
 public record LoginResponseDto(string Token, UserDto User);

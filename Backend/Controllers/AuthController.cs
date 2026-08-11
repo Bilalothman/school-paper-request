@@ -243,6 +243,9 @@ public class AuthController(
             return Ok(new LoginResponseDto(tokenService.CreateToken(user), new UserDto(user.Id, user.FullName, user.Email, user.Role)));
         }
 
+        if (!dto.AllowRegistration)
+            return NotFound(new { message = "No account was found for this Google address. Please register first." });
+
         var now = DateTime.UtcNow;
         var pending = await db.PendingRegistrations.SingleOrDefaultAsync(item => item.Email == email, cancellationToken);
         if (pending is not null && pending.LastSentAt > now.AddSeconds(-30))

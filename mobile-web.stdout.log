@@ -1,0 +1,6 @@
+
+> school-paper-requests-mobile@0.1.0 web
+> expo export:web && node scripts/serve-web.js
+
+Exporting with Webpack...
+Compiled successfully

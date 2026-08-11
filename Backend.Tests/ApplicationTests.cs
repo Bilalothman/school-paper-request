@@ -95,6 +95,34 @@ public class ApplicationTests
     }
 
     [Fact]
+    public async Task GoogleSignIn_WithUnknownAccount_DoesNotCreateRegistration()
+    {
+        await using var db = CreateDb();
+        var sender = new FakeEmailSender();
+        var controller = CreateAuthController(db, new PasswordHasher<User>(), sender);
+
+        var result = await controller.GoogleLogin(new GoogleLoginDto("credential"), CancellationToken.None);
+
+        Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Empty(db.PendingRegistrations);
+        Assert.Null(sender.Code);
+    }
+
+    [Fact]
+    public async Task GoogleRegistration_WithUnknownAccount_StartsVerification()
+    {
+        await using var db = CreateDb();
+        var sender = new FakeEmailSender();
+        var controller = CreateAuthController(db, new PasswordHasher<User>(), sender);
+
+        var result = await controller.GoogleLogin(new GoogleLoginDto("credential", AllowRegistration: true), CancellationToken.None);
+
+        Assert.IsType<AcceptedResult>(result);
+        Assert.Single(db.PendingRegistrations);
+        Assert.NotNull(sender.Code);
+    }
+
+    [Fact]
     public async Task ForgotPassword_WithValidCode_ChangesPassword()
     {
         await using var db = CreateDb();
@@ -188,7 +216,8 @@ public class ApplicationTests
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["Jwt:Key"] = "test-only-key-that-is-longer-than-thirty-two-bytes"
+            ["Jwt:Key"] = "test-only-key-that-is-longer-than-thirty-two-bytes",
+            ["Google:ClientId"] = "test-client-id.apps.googleusercontent.com"
         }).Build();
         return new AuthController(db, hasher, new FakeTokenService(), sender ?? new FakeEmailSender(), new FakeGoogleTokenVerifier(), configuration, NullLogger<AuthController>.Instance);
     }

@@ -14,7 +14,7 @@ function loadScript() {
   return scriptPromise
 }
 
-export default function GoogleSignIn({ onError }) {
+export default function GoogleSignIn({ onError, allowRegistration = false }) {
   const ref = useRef(null); const { login } = useAuth(); const navigate = useNavigate(); const [available, setAvailable] = useState(true)
   const [pendingEmail, setPendingEmail] = useState(''); const [code, setCode] = useState(''); const [verifying, setVerifying] = useState(false)
   useEffect(() => {
@@ -23,13 +23,13 @@ export default function GoogleSignIn({ onError }) {
       if (!data.clientId) { if (active) setAvailable(false); return }
       await loadScript(); if (!active || !ref.current) return
       window.google.accounts.id.initialize({ client_id: data.clientId, callback: async ({ credential }) => {
-        try { const { data: session } = await api.post('/auth/google', { credential }); if (session.requiresVerification) setPendingEmail(session.email); else { login(session); navigate('/services') } }
+        try { const { data: session } = await api.post('/auth/google', { credential, allowRegistration }); if (session.requiresVerification) setPendingEmail(session.email); else { login(session); navigate('/services') } }
         catch (error) { onError(errorMessage(error, 'Google Sign-In failed.')) }
       } })
       window.google.accounts.id.renderButton(ref.current, { theme: 'outline', size: 'large', width: 390, text: 'continue_with' })
     }).catch(() => { if (active) setAvailable(false) })
     return () => { active = false }
-  }, [login, navigate, onError])
+  }, [allowRegistration, login, navigate, onError])
   if (!available) return null
   const verify = async (event) => {
     event.preventDefault(); setVerifying(true)
