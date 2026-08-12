@@ -1,0 +1,14 @@
+
+> school-paper-request-application@1.0.0 start
+> node scripts/start.mjs
+
+Starting the ASP.NET Core API and React frontend...
+XAMPP MySQL and Camunda 7 must already be running.
+
+
+> frontend@0.0.0 dev
+> vite
+
+Using launch settings from Backend\Properties\launchSettings.json...
+Building...
+[2m6:22:07 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m Re-optimizing dependencies because vite config has changed

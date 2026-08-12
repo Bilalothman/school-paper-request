@@ -12,7 +12,7 @@ namespace Backend.Controllers;
 [ApiController]
 [Route("api/requests")]
 [Authorize(Roles = UserRoles.Student)]
-public class RequestsController(AppDbContext db, IWorkflowService workflow, ILogger<RequestsController> logger) : ControllerBase
+public class RequestsController(AppDbContext db, IWorkflowService workflow, ILogger<RequestsController> logger, IWebHostEnvironment environment) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<RequestDto>> Create(CreateRequestDto dto, CancellationToken cancellationToken)
@@ -56,9 +56,29 @@ public class RequestsController(AppDbContext db, IWorkflowService workflow, ILog
     public async Task<ActionResult<IEnumerable<RequestDto>>> Mine() => Ok(await db.Requests
         .Where(request => request.StudentId == CurrentUserId())
         .OrderByDescending(request => request.CreatedAt)
-        .Select(request => new RequestDto(request.Id, request.ServiceId, request.Service.Name, request.PhoneNumber, request.Grade, request.Address, request.Note, request.Status, request.AdminComment, request.CreatedAt))
+        .Select(request => new RequestDto(request.Id, request.ServiceId, request.Service.Name, request.PhoneNumber, request.Grade, request.Address, request.Note, request.Status, request.AdminComment, request.ResultImageFileName != null, request.CreatedAt))
         .ToListAsync());
 
+    [HttpGet("{id:int}/result-image")]
+    public async Task<ActionResult> ResultImage(int id, CancellationToken cancellationToken)
+    {
+        var request = await db.Requests
+            .Where(item => item.Id == id && item.StudentId == CurrentUserId())
+            .Select(item => new { item.Status, item.ResultImage, item.ResultImageContentType, item.ResultImageFileName })
+            .SingleOrDefaultAsync(cancellationToken);
+        if (request is null) return NotFound(new { message = "Request not found." });
+        if (request.Status != RequestStatuses.Approved || (request.ResultImage is null && request.ResultImageFileName is null))
+            return NotFound(new { message = "No approved result image is available." });
+
+        if (request.ResultImage is not null)
+            return File(request.ResultImage, request.ResultImageContentType ?? "application/octet-stream", request.ResultImageFileName ?? $"request-{id}-result");
+
+        var storedFileName = Path.GetFileName(request.ResultImageFileName!);
+        var path = Path.Combine(environment.ContentRootPath, "App_Data", "result-images", storedFileName);
+        if (!System.IO.File.Exists(path)) return NotFound(new { message = "The result image file is missing." });
+        return PhysicalFile(path, request.ResultImageContentType ?? "application/octet-stream", $"request-{id}-result{Path.GetExtension(storedFileName)}");
+    }
+
     private int CurrentUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-    private static RequestDto ToDto(PaperRequest request, string service) => new(request.Id, request.ServiceId, service, request.PhoneNumber, request.Grade, request.Address, request.Note, request.Status, request.AdminComment, request.CreatedAt);
+    private static RequestDto ToDto(PaperRequest request, string service) => new(request.Id, request.ServiceId, service, request.PhoneNumber, request.Grade, request.Address, request.Note, request.Status, request.AdminComment, request.ResultImageFileName is not null, request.CreatedAt);
 }

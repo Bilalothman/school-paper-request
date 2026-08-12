@@ -181,16 +181,24 @@ label small { justify-self: end; color: #9aa5b2; font-weight: 500; }
 .admin-card dl div { min-width: 0; }.admin-card dt { color: #98a4b1; font-size: .68rem; font-weight: 700; text-transform: uppercase; }.admin-card dd { margin: 5px 0 0; color: #435269; font-size: .82rem; }
 .admin-card .decision { display: grid; grid-template-columns: minmax(280px, 1fr) auto; gap: 24px; align-items: end; margin: 0; padding: 20px 24px; background: #f8fafc; }
 .admin-card .decision textarea { background: white; }
+.decision-fields { display: grid; gap: 14px; }
+.decision-fields input[type="file"] { padding: 10px; background: white; }
+.result-image-button { margin-top: 10px; padding: 8px 11px; font-size: .8rem; background: #e8f5ef; color: #116d4a; box-shadow: none; }
 .admin-card .actions { margin: 0; }
 .approve-button { background: linear-gradient(135deg, #15845a, #116d4a); box-shadow: 0 5px 12px rgba(21,132,90,.18); }
 .completed-decision { display: flex !important; align-items: center !important; justify-content: space-between; color: #8190a2; font-size: .78rem; }.completed-decision strong { color: #405067; }
+.completed-result { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(320px, 1.4fr); gap: 24px; align-items: end; }
+.completed-result > div:first-child { display: grid; gap: 5px; color: #8190a2; font-size: .78rem; }
+.completed-result strong { color: #405067; }
+.result-upload { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; }
+.result-upload input { margin-top: 6px; padding: 9px; background: white; }
 
 @media (max-width: 900px) {
   .auth-shell { grid-template-columns: 1fr; }.auth-story { display: none; }.mobile-logo { display: grid; }
   .service-grid { grid-template-columns: repeat(2, 1fr); }.stats-grid.admin-stats { grid-template-columns: repeat(2, 1fr); }
   .request-row { grid-template-columns: 1fr auto; }.request-details { grid-column: 1 / -1; grid-row: 2; }
   .submit-layout { grid-template-columns: 1fr; }.process-panel { position: static; }
-  .admin-card-body { grid-template-columns: 1fr; gap: 22px; }.admin-card .decision { grid-template-columns: 1fr; }.admin-card .actions { justify-content: flex-start; }
+  .admin-card-body { grid-template-columns: 1fr; gap: 22px; }.admin-card .decision, .completed-result, .result-upload { grid-template-columns: 1fr; }.admin-card .actions { justify-content: flex-start; }
 }
 @media (max-width: 620px) {
   .portal-hero { min-height: 0; padding: 32px 26px; }.hero-symbol { display: none; }.service-grid, .stats-grid, .stats-grid.admin-stats { grid-template-columns: 1fr; }

@@ -1,0 +1,8 @@
+[31merror when starting dev server:
+Error: Port 3000 is already in use
+    at httpServerStart (file:///C:/Users/Admin/Desktop/web%20month%202/frontend/node_modules/vite/dist/node/chunks/node.js:11656:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async startServer (file:///C:/Users/Admin/Desktop/web%20month%202/frontend/node_modules/vite/dist/node/chunks/node.js:26625:30)
+    at async Object.listen (file:///C:/Users/Admin/Desktop/web%20month%202/frontend/node_modules/vite/dist/node/chunks/node.js:26442:4)
+    at async CAC.<anonymous> (file:///C:/Users/Admin/Desktop/web%20month%202/frontend/node_modules/vite/dist/node/cli.js:721:3)[39m
+Frontend stopped with exit code 1.

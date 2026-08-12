@@ -13,5 +13,9 @@ public record CreateRequestDto(
     [Required, MaxLength(300)] string Address,
     [MaxLength(1000)] string? Note);
 public record AdminDecisionDto([MaxLength(1000)] string? Comment);
-public record RequestDto(int Id, int ServiceId, string Service, string PhoneNumber, string Grade, string Address, string? Note, string Status, string? AdminComment, DateTime CreatedAt);
-public record AdminRequestDto(int Id, string StudentName, string StudentEmail, int ServiceId, string Service, string PhoneNumber, string Grade, string Address, string? Note, string Status, string? AdminComment, DateTime CreatedAt);
+public class ResultImageUploadDto
+{
+    [Required] public IFormFile? Image { get; set; }
+}
+public record RequestDto(int Id, int ServiceId, string Service, string PhoneNumber, string Grade, string Address, string? Note, string Status, string? AdminComment, bool HasResultImage, DateTime CreatedAt);
+public record AdminRequestDto(int Id, string StudentName, string StudentEmail, int ServiceId, string Service, string PhoneNumber, string Grade, string Address, string? Note, string Status, string? AdminComment, bool HasResultImage, DateTime CreatedAt);

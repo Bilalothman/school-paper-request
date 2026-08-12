@@ -7,9 +7,12 @@ using Backend.Models;
 using Backend.Workflow;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Backend.Tests;
 
@@ -152,7 +155,7 @@ public class ApplicationTests
         db.Requests.Add(new PaperRequest { Id = 7, StudentId = 1, ServiceId = 1, Status = RequestStatuses.Submitted, CamundaProcessInstanceId = "process-7" });
         await db.SaveChangesAsync();
         var workflow = new FakeWorkflowService();
-        var controller = new AdminRequestsController(db, workflow, NullLogger<AdminRequestsController>.Instance);
+        var controller = new AdminRequestsController(db, workflow, NullLogger<AdminRequestsController>.Instance, TestEnvironment.Instance);
 
         var first = await controller.Approve(7, new AdminDecisionDto("Ready tomorrow"), CancellationToken.None);
         var second = await controller.Approve(7, new AdminDecisionDto(null), CancellationToken.None);
@@ -161,6 +164,7 @@ public class ApplicationTests
         Assert.IsType<ConflictObjectResult>(second);
         Assert.Equal(RequestStatuses.Approved, (await db.Requests.FindAsync(7))!.Status);
         Assert.Equal("Ready tomorrow", (await db.Requests.FindAsync(7))!.AdminComment);
+        Assert.Null((await db.Requests.FindAsync(7))!.ResultImage);
         Assert.Equal(1, workflow.CompletedCount);
     }
 
@@ -168,11 +172,37 @@ public class ApplicationTests
     public async Task Admin_CannotProcessMissingRequest()
     {
         await using var db = CreateDb();
-        var controller = new AdminRequestsController(db, new FakeWorkflowService(), NullLogger<AdminRequestsController>.Instance);
+        var controller = new AdminRequestsController(db, new FakeWorkflowService(), NullLogger<AdminRequestsController>.Instance, TestEnvironment.Instance);
 
         var result = await controller.Reject(99, new AdminDecisionDto(null), CancellationToken.None);
 
         Assert.IsType<NotFoundObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task Admin_CanUploadResultImage_OnlyAfterApproval()
+    {
+        await using var db = CreateDb();
+        db.Requests.Add(new PaperRequest { Id = 8, StudentId = 1, ServiceId = 1, Status = RequestStatuses.Submitted, CamundaProcessInstanceId = "process-8" });
+        await db.SaveChangesAsync();
+        var controller = new AdminRequestsController(db, new FakeWorkflowService(), NullLogger<AdminRequestsController>.Instance, TestEnvironment.Instance);
+        var bytes = new byte[] { 0x89, 0x50, 0x4e, 0x47 };
+        var upload = new ResultImageUploadDto
+        {
+            Image = new FormFile(new MemoryStream(bytes), 0, bytes.Length, "image", "result.png") { Headers = new HeaderDictionary(), ContentType = "image/png" }
+        };
+
+        var beforeApproval = await controller.UploadResultImage(8, upload, CancellationToken.None);
+        await controller.Approve(8, new AdminDecisionDto(null), CancellationToken.None);
+        var afterApproval = await controller.UploadResultImage(8, upload, CancellationToken.None);
+
+        Assert.IsType<ConflictObjectResult>(beforeApproval);
+        Assert.IsType<OkObjectResult>(afterApproval);
+        var saved = (await db.Requests.FindAsync(8))!;
+        Assert.Null(saved.ResultImage);
+        Assert.NotNull(saved.ResultImageFileName);
+        Assert.True(File.Exists(Path.Combine(TestEnvironment.Instance.ContentRootPath, "App_Data", "result-images", saved.ResultImageFileName)));
+        File.Delete(Path.Combine(TestEnvironment.Instance.ContentRootPath, "App_Data", "result-images", saved.ResultImageFileName));
     }
 
     [Fact]
@@ -249,5 +279,16 @@ public class ApplicationTests
         public Task<string> StartRequestProcessAsync(int requestId, CancellationToken cancellationToken) => Task.FromResult($"process-{requestId}");
         public Task CompleteReviewTaskAsync(string processInstanceId, string decision, CancellationToken cancellationToken) { CompletedCount++; return Task.CompletedTask; }
         public Task CancelProcessAsync(string processInstanceId, CancellationToken cancellationToken) => Task.CompletedTask;
+    }
+
+    private sealed class TestEnvironment : IWebHostEnvironment
+    {
+        public static TestEnvironment Instance { get; } = new();
+        public string ApplicationName { get; set; } = "Backend.Tests";
+        public IFileProvider WebRootFileProvider { get; set; } = new NullFileProvider();
+        public string WebRootPath { get; set; } = Path.GetTempPath();
+        public string EnvironmentName { get; set; } = "Testing";
+        public string ContentRootPath { get; set; } = Path.GetTempPath();
+        public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
     }
 }

@@ -15,6 +15,9 @@ public class PaperRequest
     [MaxLength(1000)] public string? Note { get; set; }
     [MaxLength(20)] public string Status { get; set; } = RequestStatuses.Submitted;
     [MaxLength(1000)] public string? AdminComment { get; set; }
+    public byte[]? ResultImage { get; set; }
+    [MaxLength(100)] public string? ResultImageFileName { get; set; }
+    [MaxLength(50)] public string? ResultImageContentType { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     [MaxLength(100)] public string? CamundaProcessInstanceId { get; set; }
 }
