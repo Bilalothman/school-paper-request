@@ -1,17 +1,15 @@
-Using launch settings from Backend\Properties\launchSettings.json...
-Building...
 info: Microsoft.EntityFrameworkCore.Database.Command[20101]
-      Executed DbCommand (10ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      Executed DbCommand (13ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
       SELECT GET_LOCK('__school_paper_requests_EFMigrationsLock', 259200)
 info: Microsoft.EntityFrameworkCore.Database.Command[20101]
-      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
       CREATE TABLE IF NOT EXISTS `__EFMigrationsHistory` (
           `MigrationId` varchar(150) CHARACTER SET utf8mb4 NOT NULL,
           `ProductVersion` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
           CONSTRAINT `PK___EFMigrationsHistory` PRIMARY KEY (`MigrationId`)
       ) CHARACTER SET=utf8mb4;
 info: Microsoft.EntityFrameworkCore.Database.Command[20101]
-      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      Executed DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
       SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='school_paper_requests' AND TABLE_NAME='__EFMigrationsHistory';
 info: Microsoft.EntityFrameworkCore.Database.Command[20101]
       Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
@@ -21,7 +19,7 @@ info: Microsoft.EntityFrameworkCore.Database.Command[20101]
 info: Microsoft.EntityFrameworkCore.Migrations[20405]
       No migrations were applied. The database is already up to date.
 info: Microsoft.EntityFrameworkCore.Database.Command[20101]
-      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
       SELECT RELEASE_LOCK('__school_paper_requests_EFMigrationsLock')
 info: Microsoft.EntityFrameworkCore.Database.Command[20101]
       Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
@@ -38,18 +36,6 @@ info: Microsoft.Hosting.Lifetime[14]
 info: Microsoft.Hosting.Lifetime[0]
       Application started. Press Ctrl+C to shut down.
 info: Microsoft.Hosting.Lifetime[0]
-      Hosting environment: Development
+      Hosting environment: Production
 info: Microsoft.Hosting.Lifetime[0]
       Content root path: C:\Users\Admin\Desktop\web month 2\Backend
-info: Microsoft.EntityFrameworkCore.Database.Command[20101]
-      Executed DbCommand (23ms) [Parameters=[@__payload_Subject_0='?' (Size = 100)], CommandType='Text', CommandTimeout='30']
-      SELECT `u`.`Id`, `u`.`Email`, `u`.`FullName`, `u`.`GoogleSubject`, `u`.`PasswordHash`, `u`.`Role`
-      FROM `Users` AS `u`
-      WHERE `u`.`GoogleSubject` = @__payload_Subject_0
-      LIMIT 2
-info: Microsoft.EntityFrameworkCore.Database.Command[20101]
-      Executed DbCommand (1ms) [Parameters=[@__email_0='?' (Size = 200)], CommandType='Text', CommandTimeout='30']
-      SELECT `u`.`Id`, `u`.`Email`, `u`.`FullName`, `u`.`GoogleSubject`, `u`.`PasswordHash`, `u`.`Role`
-      FROM `Users` AS `u`
-      WHERE `u`.`Email` = @__email_0
-      LIMIT 2

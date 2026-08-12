@@ -17,10 +17,18 @@ public class RequestsController(AppDbContext db, IWorkflowService workflow, ILog
     [HttpPost]
     public async Task<ActionResult<RequestDto>> Create(CreateRequestDto dto, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(dto.PhoneNumber) || string.IsNullOrWhiteSpace(dto.Grade) || string.IsNullOrWhiteSpace(dto.Address))
+            return BadRequest(new { message = "Phone number, grade, and address are required." });
+
         var service = await db.Services.FindAsync([dto.ServiceId], cancellationToken);
         if (service is null) return BadRequest(new { message = "The selected service does not exist." });
 
-        var request = new PaperRequest { StudentId = CurrentUserId(), ServiceId = service.Id, Note = string.IsNullOrWhiteSpace(dto.Note) ? null : dto.Note.Trim() };
+        var request = new PaperRequest
+        {
+            StudentId = CurrentUserId(), ServiceId = service.Id,
+            PhoneNumber = dto.PhoneNumber.Trim(), Grade = dto.Grade.Trim(), Address = dto.Address.Trim(),
+            Note = string.IsNullOrWhiteSpace(dto.Note) ? null : dto.Note.Trim()
+        };
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         db.Requests.Add(request);
         await db.SaveChangesAsync(cancellationToken);
@@ -48,9 +56,9 @@ public class RequestsController(AppDbContext db, IWorkflowService workflow, ILog
     public async Task<ActionResult<IEnumerable<RequestDto>>> Mine() => Ok(await db.Requests
         .Where(request => request.StudentId == CurrentUserId())
         .OrderByDescending(request => request.CreatedAt)
-        .Select(request => new RequestDto(request.Id, request.ServiceId, request.Service.Name, request.Note, request.Status, request.AdminComment, request.CreatedAt))
+        .Select(request => new RequestDto(request.Id, request.ServiceId, request.Service.Name, request.PhoneNumber, request.Grade, request.Address, request.Note, request.Status, request.AdminComment, request.CreatedAt))
         .ToListAsync());
 
     private int CurrentUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-    private static RequestDto ToDto(PaperRequest request, string service) => new(request.Id, request.ServiceId, service, request.Note, request.Status, request.AdminComment, request.CreatedAt);
+    private static RequestDto ToDto(PaperRequest request, string service) => new(request.Id, request.ServiceId, service, request.PhoneNumber, request.Grade, request.Address, request.Note, request.Status, request.AdminComment, request.CreatedAt);
 }

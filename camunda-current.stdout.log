@@ -1,0 +1,6 @@
+Setting JAVA property to "C:\Program Files\Eclipse Adoptium\jdk-17.0.20.8-hotspot\\bin\java"
+Java version is 17.0.20
+REST API enabled
+WebApps enabled
+Invoice Example included - needs to be enabled in application configuration as well
+classpath: C:\Users\Admin\Desktop\web month 2\camunda7\internal\webapps,C:\Users\Admin\Desktop\web month 2\camunda7\internal\rest,C:\Users\Admin\Desktop\web month 2\camunda7\internal\example,C:\Users\Admin\Desktop\web month 2\camunda7\internal\..\configuration\userlib,C:\Users\Admin\Desktop\web month 2\camunda7\internal\..\configuration\keystore

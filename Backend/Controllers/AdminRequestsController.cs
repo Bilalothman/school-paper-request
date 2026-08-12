@@ -16,7 +16,7 @@ public class AdminRequestsController(AppDbContext db, IWorkflowService workflow,
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AdminRequestDto>>> GetAll() => Ok(await db.Requests
         .OrderByDescending(request => request.CreatedAt)
-        .Select(request => new AdminRequestDto(request.Id, request.Student.FullName, request.Student.Email, request.ServiceId, request.Service.Name, request.Note, request.Status, request.AdminComment, request.CreatedAt))
+        .Select(request => new AdminRequestDto(request.Id, request.Student.FullName, request.Student.Email, request.ServiceId, request.Service.Name, request.PhoneNumber, request.Grade, request.Address, request.Note, request.Status, request.AdminComment, request.CreatedAt))
         .ToListAsync());
 
     [HttpPost("{id:int}/approve")]

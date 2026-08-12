@@ -9,6 +9,9 @@ public class PaperRequest
     public User Student { get; set; } = null!;
     public int ServiceId { get; set; }
     public PaperService Service { get; set; } = null!;
+    [MaxLength(30)] public string PhoneNumber { get; set; } = string.Empty;
+    [MaxLength(50)] public string Grade { get; set; } = string.Empty;
+    [MaxLength(300)] public string Address { get; set; } = string.Empty;
     [MaxLength(1000)] public string? Note { get; set; }
     [MaxLength(20)] public string Status { get; set; } = RequestStatuses.Submitted;
     [MaxLength(1000)] public string? AdminComment { get; set; }
