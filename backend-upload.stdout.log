@@ -289,3 +289,86 @@ info: Microsoft.EntityFrameworkCore.Database.Command[20101]
       INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
       WHERE `r`.`StudentId` = 11
       ORDER BY `r`.`CreatedAt` DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`StudentId` = 11
+      ORDER BY `r`.`CreatedAt` DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`StudentId` = 11
+      ORDER BY `r`.`CreatedAt` DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`StudentId` = 11
+      ORDER BY `r`.`CreatedAt` DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`StudentId` = 11
+      ORDER BY `r`.`CreatedAt` DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`StudentId` = 11
+      ORDER BY `r`.`CreatedAt` DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Status`, `r`.`ResultImage`, `r`.`ResultImageContentType`, `r`.`ResultImageFileName`
+      FROM `Requests` AS `r`
+      WHERE (`r`.`Id` = @__id_0) AND (`r`.`StudentId` = 11)
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`StudentId` = 11
+      ORDER BY `r`.`CreatedAt` DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`StudentId` = 11
+      ORDER BY `r`.`CreatedAt` DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`StudentId` = 11
+      ORDER BY `r`.`CreatedAt` DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`StudentId` = 11
+      ORDER BY `r`.`CreatedAt` DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`StudentId` = 11
+      ORDER BY `r`.`CreatedAt` DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`StudentId` = 11
+      ORDER BY `r`.`CreatedAt` DESC

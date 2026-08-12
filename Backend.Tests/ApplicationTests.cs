@@ -152,10 +152,16 @@ public class ApplicationTests
     public async Task Admin_CanApproveSubmittedRequest_OnlyOnce()
     {
         await using var db = CreateDb();
-        db.Requests.Add(new PaperRequest { Id = 7, StudentId = 1, ServiceId = 1, Status = RequestStatuses.Submitted, CamundaProcessInstanceId = "process-7" });
+        db.Requests.Add(new PaperRequest
+        {
+            Id = 7, Student = new User { Id = 1, FullName = "Student", Email = "student@school.com", PasswordHash = "hash", Role = UserRoles.Student },
+            Service = new PaperService { Id = 1, Name = "Transcript", Description = "Grades" },
+            Status = RequestStatuses.Submitted, CamundaProcessInstanceId = "process-7"
+        });
         await db.SaveChangesAsync();
         var workflow = new FakeWorkflowService();
-        var controller = new AdminRequestsController(db, workflow, NullLogger<AdminRequestsController>.Instance, TestEnvironment.Instance);
+        var emailSender = new FakeEmailSender();
+        var controller = new AdminRequestsController(db, workflow, emailSender, NullLogger<AdminRequestsController>.Instance, TestEnvironment.Instance);
 
         var first = await controller.Approve(7, new AdminDecisionDto("Ready tomorrow"), CancellationToken.None);
         var second = await controller.Approve(7, new AdminDecisionDto(null), CancellationToken.None);
@@ -166,13 +172,15 @@ public class ApplicationTests
         Assert.Equal("Ready tomorrow", (await db.Requests.FindAsync(7))!.AdminComment);
         Assert.Null((await db.Requests.FindAsync(7))!.ResultImage);
         Assert.Equal(1, workflow.CompletedCount);
+        Assert.Equal(("student@school.com", 7, "Transcript", RequestStatuses.Approved, "Ready tomorrow"), emailSender.DecisionNotification);
     }
 
     [Fact]
     public async Task Admin_CannotProcessMissingRequest()
     {
         await using var db = CreateDb();
-        var controller = new AdminRequestsController(db, new FakeWorkflowService(), NullLogger<AdminRequestsController>.Instance, TestEnvironment.Instance);
+        var emailSender = new FakeEmailSender();
+        var controller = new AdminRequestsController(db, new FakeWorkflowService(), emailSender, NullLogger<AdminRequestsController>.Instance, TestEnvironment.Instance);
 
         var result = await controller.Reject(99, new AdminDecisionDto(null), CancellationToken.None);
 
@@ -183,9 +191,15 @@ public class ApplicationTests
     public async Task Admin_CanUploadResultImage_OnlyAfterApproval()
     {
         await using var db = CreateDb();
-        db.Requests.Add(new PaperRequest { Id = 8, StudentId = 1, ServiceId = 1, Status = RequestStatuses.Submitted, CamundaProcessInstanceId = "process-8" });
+        db.Requests.Add(new PaperRequest
+        {
+            Id = 8, Student = new User { Id = 1, FullName = "Student", Email = "student@school.com", PasswordHash = "hash", Role = UserRoles.Student },
+            Service = new PaperService { Id = 1, Name = "Transcript", Description = "Grades" },
+            Status = RequestStatuses.Submitted, CamundaProcessInstanceId = "process-8"
+        });
         await db.SaveChangesAsync();
-        var controller = new AdminRequestsController(db, new FakeWorkflowService(), NullLogger<AdminRequestsController>.Instance, TestEnvironment.Instance);
+        var emailSender = new FakeEmailSender();
+        var controller = new AdminRequestsController(db, new FakeWorkflowService(), emailSender, NullLogger<AdminRequestsController>.Instance, TestEnvironment.Instance);
         var bytes = new byte[] { 0x89, 0x50, 0x4e, 0x47 };
         var upload = new ResultImageUploadDto
         {
@@ -202,6 +216,7 @@ public class ApplicationTests
         Assert.Null(saved.ResultImage);
         Assert.NotNull(saved.ResultImageFileName);
         Assert.True(File.Exists(Path.Combine(TestEnvironment.Instance.ContentRootPath, "App_Data", "result-images", saved.ResultImageFileName)));
+        Assert.Equal(("student@school.com", 8, "Transcript"), emailSender.ResultImageNotification);
         File.Delete(Path.Combine(TestEnvironment.Instance.ContentRootPath, "App_Data", "result-images", saved.ResultImageFileName));
     }
 
@@ -255,9 +270,21 @@ public class ApplicationTests
     private sealed class FakeEmailSender : IEmailSender
     {
         public string? Code { get; private set; }
+        public (string Email, int RequestId, string Service, string Decision, string? Comment)? DecisionNotification { get; private set; }
+        public (string Email, int RequestId, string Service)? ResultImageNotification { get; private set; }
         public Task SendVerificationCodeAsync(string email, string fullName, string code, CancellationToken cancellationToken, bool isPasswordReset = false)
         {
             Code = code;
+            return Task.CompletedTask;
+        }
+        public Task SendRequestDecisionAsync(string email, string fullName, int requestId, string serviceName, string decision, string? adminComment, CancellationToken cancellationToken)
+        {
+            DecisionNotification = (email, requestId, serviceName, decision, adminComment);
+            return Task.CompletedTask;
+        }
+        public Task SendResultImageReadyAsync(string email, string fullName, int requestId, string serviceName, CancellationToken cancellationToken)
+        {
+            ResultImageNotification = (email, requestId, serviceName);
             return Task.CompletedTask;
         }
     }

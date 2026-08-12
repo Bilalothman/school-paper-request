@@ -2,6 +2,7 @@
 **/obj/
 **/node_modules/
 **/dist/
+**/.run/
 .env
 *.user
 *.suo
