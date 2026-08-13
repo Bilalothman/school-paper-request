@@ -239,3 +239,14 @@ label small { justify-self: end; color: #9aa5b2; font-weight: 500; }
 .profile-form-panel form { max-width: 600px; }
 .profile-form-panel input:disabled { color: #718095; background: #eef2f7; cursor: not-allowed; }
 @media (max-width: 760px) { .profile-layout { grid-template-columns: 1fr; }.profile-summary, .profile-form-panel { padding: 27px 22px; } }
+
+.location-heading { align-items: center; }
+.location-heading > div { max-width: 680px; }
+.location-card { overflow: hidden; border: 1px solid var(--border); border-radius: 20px; background: white; box-shadow: var(--shadow-md); }
+.school-map { display: block; width: 100%; height: clamp(390px, 58vh, 620px); border: 0; background: #e8edf3; }
+.location-details { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; padding: 22px 26px; }
+.location-details h2 { margin: 0 0 3px; font-size: 1.15rem; }
+.location-details p { margin: 0; }
+.location-details > a { font-weight: 750; }
+.location-pin { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; color: #1769e0; background: #eaf2ff; font-size: .72rem; }
+@media (max-width: 600px) { .directions-button { width: 100%; }.school-map { height: 430px; }.location-details { grid-template-columns: auto 1fr; padding: 18px; }.location-details > a { grid-column: 2; } }

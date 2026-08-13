@@ -41,3 +41,24 @@ info: Microsoft.Hosting.Lifetime[0]
       Hosting environment: Development
 info: Microsoft.Hosting.Lifetime[0]
       Content root path: C:\Users\Admin\Desktop\web month 2\Backend
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (40ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `r`.`Address`, `r`.`AdminComment`, `r`.`CamundaProcessInstanceId`, `r`.`CreatedAt`, `r`.`Grade`, `r`.`Note`, `r`.`PhoneNumber`, `r`.`ResultImage`, `r`.`ResultImageContentType`, `r`.`ResultImageFileName`, `r`.`ServiceId`, `r`.`Status`, `r`.`StudentId`, `u`.`Id`, `u`.`Email`, `u`.`FullName`, `u`.`GoogleSubject`, `u`.`PasswordHash`, `u`.`Role`, `s`.`Id`, `s`.`Description`, `s`.`Name`
+      FROM `Requests` AS `r`
+      INNER JOIN `Users` AS `u` ON `r`.`StudentId` = `u`.`Id`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      WHERE `r`.`Id` = @__id_0
+      LIMIT 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (11ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (Size = 100)], CommandType='Text', CommandTimeout='30']
+      SET AUTOCOMMIT = 1;
+      UPDATE `Requests` SET `ResultImageFileName` = @p0
+      WHERE `Id` = @p1;
+      SELECT ROW_COUNT();
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT `r`.`Id`, `u`.`FullName`, `u`.`Email`, `r`.`ServiceId`, `s`.`Name`, `r`.`PhoneNumber`, `r`.`Grade`, `r`.`Address`, `r`.`Note`, `r`.`Status`, `r`.`AdminComment`, `r`.`ResultImageFileName` IS NOT NULL, `r`.`CreatedAt`
+      FROM `Requests` AS `r`
+      INNER JOIN `Users` AS `u` ON `r`.`StudentId` = `u`.`Id`
+      INNER JOIN `Services` AS `s` ON `r`.`ServiceId` = `s`.`Id`
+      ORDER BY `r`.`CreatedAt` DESC

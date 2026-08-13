@@ -10,6 +10,7 @@ import AdminRequests from './pages/AdminRequests'
 import AdminServices from './pages/AdminServices'
 import Profile from './pages/Profile'
 import ForgotPassword from './pages/ForgotPassword'
+import SchoolLocation from './pages/SchoolLocation'
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route path="/profile" element={<Profile />} />
+            <Route path="/location" element={<SchoolLocation />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
